@@ -9,7 +9,7 @@ const ProductList = ({ onDelete, products })=>{
     title:'Actions',
     render:(text, record) => {
       return (
-        <Popconfirm title="确认删除?" onconfirm={()=> onDelete(record.id)}>
+        <Popconfirm title="确认删除?" onConfirm={()=> onDelete(record.id)}>
           <Button>Delete</Button>
         </Popconfirm>
         )
