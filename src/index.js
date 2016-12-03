@@ -1,26 +1,18 @@
 import './index.html';
-import './index.css';
-import dva from 'dva';
+//import './index.css';
+import React from 'react'
+import { render } from 'react-dom'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import App from './components/App'
+import todoApp from './reducers'
 
+const rootEle = document.getElementById('app')
+const store = createStore(todoApp)
 
-// 1. Initialize
- const app = dva({
-   initialState: {
-     products: [
-       { name: 'dva', id: 1 },
-       { name: 'antd', id: 2 },
-     ],
-   },
- });
-
-// 2. Plugins
-//app.use({});
-
-// 3. Model
-app.model(require('./models/products'));
-
-// 4. Router
-app.router(require('./router'));
-
-// 5. Start
-app.start('#root');
+render(
+  <Provider store={store}>
+  <App />
+  </Provider>,
+  rootEle
+  )

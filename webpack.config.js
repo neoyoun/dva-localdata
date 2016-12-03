@@ -37,6 +37,7 @@ module.exports = function(webpackConfig, env) {
       loader.test = /\.css$/;
     }
   });
+  webpackConfig.module.loaders.push({test:/\.json$/,loaders:['json']})
 
   return webpackConfig;
 };
