@@ -1,22 +1,77 @@
-export const ADD_TODO = 'ADD_TODO';
-export const COMPLETE_TODO = 'COMPLETE_TODO'
-export const RESET_TODO = 'RESET_TODO'
-export const SET_VISIBILITY_FILTERS = 'SET_VISIBILITY_FILTERS'
+import fetch from 'isomorphic-fetch'
+export const SELECT_SUBREDDIT = 'SELECT_SUBREDDIT'
+export const INVALIDATE_SUBREDDIT = 'INVALIDATE_SUBREDDIT'
+export const REQUEST_POSTS = 'REQUEST_POSTS'
+export const RECEIVE_POSTS = 'RECEIVE_POSTS'
+function selectSubreddit(subreddit) {
+  return{
+    type:SELECT_SUBREDDIT,
+    subreddit
+  }
+}
 
-export const VisibilityFilters = {
-  SHOW_ALL:'SHOW_ALL',
-  SHOW_COMPLETED:'SHOW_COMPLETED',
-  SHOW_ACTIVE:'SHOW_ACTIVE'
+function invalidateSubreddit(subreddit) {
+  return{
+    type:INVALIDATE_SUBREDDIT,
+    subreddit
+  }
 }
-export function addTodo(text) {
-  return {type:ADD_TODO,text}
+
+
+function requestPosts(subreddit) {
+  return {
+    type:REQUEST_POSTS,
+    subreddit
+  }
 }
-export function completeTodo(index) {
-  return {type:COMPLETE_TODO,index}
+function receivePosts(subreddit,json) {
+  //请求成功后触发接收数据的 ACTION
+  return{
+    type:RECEIVE_POSTS,
+    subreddit,
+    posts:json.data.map(child => child.data),
+    reveiceAt:Date.now()
+  }
 }
-export function resetTodo(index) {
-  return {type:RESET_TODO,index}
+
+function fetchPosts(subreddit) {
+  // Thunk middleware 知道如何处理函数。
+  // 这里把 dispatch 方法通过参数的形式传给函数，
+  // 以此来让它自己也能 dispatch action。
+  return function (dispatch) {
+    // 首次 dispatch：更新应用的 state 来通知
+    // API 请求发起了。
+    dispatch(requestPost(subreddit))
+
+    // thunk middleware 调用的函数可以有返回值，
+    // 它会被当作 dispatch 方法的返回值传递。
+
+    // 这个案例中，我们返回一个等待处理的 promise。
+    // 这并不是 redux middleware 所必须的，但这对于我们而言很方便。
+    return fetch(`http://www.subreddit.com/r/${subreddit}.json`)
+    .then(res => res.json())
+    .then(json => dispatch(receivePosts(subreddit,json)))
+  }
 }
-export function setVisibilityFilter(filter){
-  return {type:SET_VISIBILITY_FILTERS,filter}
+
+function shouldFetchPost(state,subreddit) {
+  const posts = state.postsBySubreddit[subreddit]
+  if(!post){
+    return true
+  } else if(posts.isFetching){
+    return false
+  } else {
+    return post.didInvalidate
+  }
 }
+
+export function fetchPostsIfNeeded(subreddit) {
+  return (dispatch, getState) => {
+    if(showldFetchPost(getState(),subreddit)){
+      return dispatch(fetchPosts(subreddit))
+    } else {
+      return Promise.resolve()
+    }
+  }
+}
+
