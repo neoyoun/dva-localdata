@@ -55,6 +55,7 @@ function fetchPosts(subreddit) {
 }
 
 function shouldFetchPost(state,subreddit) {
+  console.log(state)
   const posts = state.postsBySubreddit[subreddit]
   if(!post){
     return true
