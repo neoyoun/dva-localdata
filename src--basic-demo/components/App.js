@@ -6,6 +6,7 @@ import TodoList from './TodoList'
 import Footer from './Footer'
 
 class App extends Component{
+
   render(){
     const { dispatch, visibleTodos, visibilityFilter } = this.props
     return(
