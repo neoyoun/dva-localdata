@@ -9,7 +9,9 @@ import todoApp from './reducers'
 
 const rootEle = document.getElementById('app')
 const store = createStore(todoApp)
-
+function () {
+  if((required != undefined) && required)
+}
 render(
   <Provider store={store}>
   <App />
