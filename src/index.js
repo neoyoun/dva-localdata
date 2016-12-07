@@ -1,20 +1,8 @@
-import React,{ Component } from 'react'
+import './index.html';
+import 'babel-polyfill'
+import React from 'react'
 import { render } from 'react-dom'
+import Root from './containers/Root'
+//import AsyncApp from './containers/AsyncApp'
 
-class App extends Component {
-  render() {
-    return (
-      <div>
-        <button onClick={()=>this.handle1Click()}>alert1</button>
-        <button onClick={()=>this.handle2Click()}>alert2</button>
-      </div>
-      )
-  }
-  handle1Click() {
-    alert('1')
-  }
-  handle2Click() {
-    alert('2')
-  }
-}
-render(<App />,document.getElementById('root'))
+render(<Root />,document.getElementById('root'))

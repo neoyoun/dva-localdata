@@ -5,11 +5,6 @@ import Picker from '../components/Picker'
 import Posts from '../components/Posts'
 
 class AsyncApp extends Component {
-  constructor(props){
-    super(props)
-    //this.handleChange = this.handleChange.bind(this)
-   // this.handleRefreshClick = this.handleRefreshClick.bind(this)
-  }
   componentDidMount() {
     const { dispatch, selectedSubreddit } = this.props
     dispatch(fetchPostsIfNeeded(selectedSubreddit))
@@ -21,13 +16,14 @@ class AsyncApp extends Component {
     }
   }
   handleChange(nextSubreddit) {
+    console.log('change to next >>'+ nextSubreddit)
     this.props.dispatch(selectSubreddit(nextSubreddit))
   }
   handleRefreshClick(e) {
     e.preventDefault()
 
     const { dispatch, selectedSubreddit } = this.props
-    dispacth(invalidateSubreddit(selectedSubreddit))
+    dispatch(invalidateSubreddit(selectedSubreddit))
     dispatch(fetchPostsIfNeeded(selectedSubreddit))
   }
 
@@ -36,8 +32,8 @@ class AsyncApp extends Component {
     return (
       <div>
         <Picker value={selectedSubreddit}
-          onChange={()=>this.handleChange}
-          options={[ 'reactjs', 'frontend']} />
+          onChange={ subreddit =>this.handleChange(subreddit)}
+          options={[ 'reactjs', 'frontend', 'backend']} />
         <p>
           {lastUpdated &&
             <span>
@@ -59,7 +55,7 @@ class AsyncApp extends Component {
         {
           posts.length > 0 &&
           <div style={{ opacity:isFetching ? 0.5 : 1 }}>
-            <Post posts={posts}/>
+            <Posts posts={posts}/>
           </div>
         }
       </div>
@@ -69,8 +65,26 @@ class AsyncApp extends Component {
 
 AsyncApp.propTypes = {
   selectedSubreddit:PropTypes.string.isRequired,
-  posts:PropsTypes.array.isRequired,
-  isFetching:PropsTypes.bool.isRequired,
-  lastUpdated:PropsTypes.number,
-  dispatch:PropsTypes.func.isRequired
+  posts:PropTypes.array.isRequired,
+  isFetching:PropTypes.bool.isRequired,
+  lastUpdated:PropTypes.number,
+  dispatch:PropTypes.func.isRequired
 }
+
+function mapStateToProps(state) {
+  const { selectedSubreddit, postsBySubreddit } = state
+  const {
+    isFetching,
+    lastUpdated,
+    items:posts
+  } = postsBySubreddit[selectedSubreddit] || { isFetching:true, items:[]}
+
+  return {
+    selectedSubreddit,
+    posts,
+    isFetching,
+    lastUpdated
+  }
+}
+
+export default connect(mapStateToProps)(AsyncApp)

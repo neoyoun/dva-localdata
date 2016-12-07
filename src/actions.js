@@ -29,7 +29,7 @@ function receivePosts(subreddit,json) {
   return{
     type:RECEIVE_POSTS,
     subreddit,
-    posts:json.data.map(child => child.data),
+    posts:json.data.children.map(child=>child.data),
     reveiceAt:Date.now()
   }
 }
@@ -41,7 +41,7 @@ function fetchPosts(subreddit) {
   return function (dispatch) {
     // 首次 dispatch：更新应用的 state 来通知
     // API 请求发起了。
-    dispatch(requestPost(subreddit))
+    dispatch(requestPosts(subreddit))
 
     // thunk middleware 调用的函数可以有返回值，
     // 它会被当作 dispatch 方法的返回值传递。
@@ -54,21 +54,20 @@ function fetchPosts(subreddit) {
   }
 }
 
-function shouldFetchPost(state,subreddit) {
-  console.log(state)
+function shouldFetchPosts(state,subreddit) {
   const posts = state.postsBySubreddit[subreddit]
-  if(!post){
+  if(!posts){
     return true
   } else if(posts.isFetching){
     return false
   } else {
-    return post.didInvalidate
+    return posts.didInvalidate
   }
 }
 
 export function fetchPostsIfNeeded(subreddit) {
   return (dispatch, getState) => {
-    if(showldFetchPost(getState(),subreddit)){
+    if(shouldFetchPosts(getState(),subreddit)){
       return dispatch(fetchPosts(subreddit))
     } else {
       return Promise.resolve()

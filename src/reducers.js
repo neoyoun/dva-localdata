@@ -5,7 +5,7 @@ import {
   REQUEST_POSTS,
   RECEIVE_POSTS} from './actions'
 
-function selectSubreddit(state='reactjs',action) {
+function selectedSubreddit(state='reactjs',action) {
   switch(action.type){
     case SELECT_SUBREDDIT:
       return action.subreddit
@@ -17,7 +17,7 @@ function selectSubreddit(state='reactjs',action) {
 function posts(state={
   isFetching:false,
   didInvalidate:false,
-  item:[]
+  items:[]
 },action) {
   switch(action.type){
     case INVALIDATE_SUBREDDIT:
@@ -41,14 +41,16 @@ function postsBySubreddit(state={},action) {
     case INVALIDATE_SUBREDDIT:
     case REQUEST_POSTS:
     case RECEIVE_POSTS:
-      return Object.assign({},state,{
-        [action.subreddit]:posts(state[action.type],action)
+      return Object.assign({}, state, {
+        [action.subreddit]:posts(state[action.subreddit],action)
       })
+    default:
+      return state
   }
 }
 
 const rootReducer = combineReducers({
   postsBySubreddit,
-  selectSubreddit
+  selectedSubreddit
 })
 export default rootReducer
